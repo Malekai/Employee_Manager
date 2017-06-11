@@ -1,8 +1,9 @@
-import { EMPLOYEE_UPDATE, EMPLOYEE_CREATE, EMPLOYEE_SAVE_SUCCESS } from '../actions/types';
+import { EMPLOYEE_UPDATE, FORM_RESET } from '../actions/types';
 
 const INITIAL_STATE = {
   name: '',
   phone: '',
+  role: '',
   shift: ''
 };
 
@@ -11,9 +12,7 @@ export default (state = INITIAL_STATE, action) => {
     case EMPLOYEE_UPDATE:
       // action.payload === { props: 'name', value: 'John' }
       return { ...state, [action.payload.prop]: action.payload.value };
-    case EMPLOYEE_CREATE:
-      return INITIAL_STATE;
-    case EMPLOYEE_SAVE_SUCCESS:
+    case FORM_RESET:
       return INITIAL_STATE;
     default:
       return state;

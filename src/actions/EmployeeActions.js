@@ -2,9 +2,8 @@ import firebase from 'firebase';
 import { Actions } from 'react-native-router-flux';
 import {
   EMPLOYEE_UPDATE,
-  EMPLOYEE_CREATE,
+  FORM_RESET,
   EMPLOYEES_FETCH_SUCCESS,
-  EMPLOYEE_SAVE_SUCCESS
 } from './types';
 
 export const employeeUpdate = ({ prop, value }) => {
@@ -14,15 +13,15 @@ export const employeeUpdate = ({ prop, value }) => {
   };
 };
 
-export const employeeCreate = ({ name, phone, shift }) => {
+export const employeeCreate = ({ name, phone, role, shift }) => {
   const { currentUser } = firebase.auth();
 
   return (dispatch) => {
     // push data to firebase
     firebase.database().ref(`/users/${currentUser.uid}/employees`)
-      .push( { name, phone, shift })
+      .push( { name, phone, role, shift })
       .then(() => {
-        dispatch({ type: EMPLOYEE_CREATE });
+        resetForm();
         Actions.employeeList( { type: 'reset' });
       });
   };
@@ -42,14 +41,14 @@ export const employeesFetch = () => {
 };
 
 // using uid to specify which employee we want to change
-export const employeeSave = ({ name, phone, shift, uid }) => {
+export const employeeSave = ({ name, phone, role, shift, uid }) => {
   const { currentUser } = firebase.auth();
 
   return (dispatch) => {
     firebase.database().ref(`/users/${currentUser.uid}/employees/${uid}`)
-      .set({ name, phone, shift })
+      .set({ name, phone, role, shift })
       .then(() => {
-        dispatch({ type: EMPLOYEE_SAVE_SUCCESS });
+        resetForm()
         Actions.employeeList({ type: 'reset' })
       });
   };
@@ -58,11 +57,16 @@ export const employeeSave = ({ name, phone, shift, uid }) => {
 export const employeeDelete = ({ uid }) => {
   const { currentUser } = firebase.auth();
 
-  return () => {
+  return (dispatch) => {
     firebase.database().ref(`/users/${currentUser.uid}/employees/${uid}`)
       .remove()
       .then(() => {
+        resetForm();
         Actions.employeeList({ type: 'reset' })
       });
   };
 };
+
+export const resetForm = () => {
+  return { type: FORM_RESET }
+}
